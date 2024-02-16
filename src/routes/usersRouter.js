@@ -9,6 +9,8 @@ const { updatePassword } = require("../controllers/users/upPasswordController");
 const { updateMail } = require("../controllers/users/upDateMailController");
 const { updateProfilePicture } = require("../controllers/users/upDatePictureController");
 const { updatePaymentMethods } = require('../controllers/users/addPayMethod');
+const {deleteUser} = require ("../controllers/users/deleteUserController");
+const {Useradmin} = require ("../controllers/users/edditUserAdminController")
 
 
 const usersRouter = Router();
@@ -22,6 +24,7 @@ usersRouter.put("/perfil/updatepassword/:idKey", updatePassword);
 usersRouter.put("/perfil/update/:idKey", updateMail);
 usersRouter.put('/profile/picture/:idKey', updateProfilePicture);
 usersRouter.put('/:userId/paymentMethods', updatePaymentMethods);
-
+usersRouter.delete("/delete/:userId", deleteUser);
+usersRouter.put("/eddituseradmin/:userId", Useradmin);
 
 module.exports = usersRouter;
