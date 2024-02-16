@@ -1,7 +1,7 @@
 const { User } = require("../../db");
 
 const deleteUser = async (req, res) => {
-    const userId = req.params.userId; // Cambiado a "userId" en lugar de "id"
+    const userId = req.params.userId;
   
     try {
       const user = await User.findByPk(userId);
