@@ -8,7 +8,7 @@ const { updateUser } = require("../controllers/users/upDateUserController");  //
 const { updatePassword } = require("../controllers/users/upPasswordController");
 const { updateMail } = require("../controllers/users/upDateMailController");
 const { updateProfilePicture } = require("../controllers/users/upDatePictureController");
-const { updatePaymentMethods } = require('../controllers/users/addPayMethod');
+const { updatePaymentMethods } = require ('../controllers/users/addPayMethod');
 const {deleteUser} = require ("../controllers/users/deleteUserController");
 const {Useradmin} = require ("../controllers/users/edditUserAdminController")
 
