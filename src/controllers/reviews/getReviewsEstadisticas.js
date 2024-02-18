@@ -1,30 +1,25 @@
-const { sequelize, Review } = require("../../db");
+const { Review, sequelize } = require("../../db");
 const { Op } = require("sequelize");
+const moment = require("moment-timezone");
 
 const getReviewStatistics = async (req, res) => {
     try {
-        // Imprimir la hora de creación de las revisiones
-        const reviews = await Review.findAll({
-            limit: 1, // Solo necesitamos una revisión para obtener su hora de creación
-            order: [ [ 'createdAt', 'DESC' ] ], // Ordenar por fecha de creación descendente para obtener la última revisión creada
-        });
-        console.log("Hora de creación de la revisión:", reviews[0].createdAt);
+        const today = moment.tz('America/Argentina/Buenos_Aires').startOf('day');
+        const yesterday = moment(today).subtract(1, 'day');
 
-        // Consulta para obtener las estadísticas de revisión
-        const reviewStats = await sequelize.query(
-            `SELECT 
-                TO_CHAR(DATE_TRUNC('hour', "createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'ART'), 'HH24:00') AS "hour",
-                COUNT(*) AS "reviewCount"
-            FROM 
-                "Review"
-            WHERE 
-                "createdAt" >= CURRENT_DATE - INTERVAL '1 day'
-            GROUP BY 
-                DATE_TRUNC('hour', "createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'ART')
-            ORDER BY 
-                "hour" ASC;`,
-            { type: sequelize.QueryTypes.SELECT }
-        );
+        const reviewStats = await Review.findAll({
+            attributes: [
+                [sequelize.literal(`TO_CHAR("createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'ART', 'HH24:00')`), 'hour'],
+                [sequelize.fn('COUNT', sequelize.col('id')), 'reviewCount']
+            ],
+            where: {
+                createdAt: {
+                    [Op.between]: [yesterday, today]
+                }
+            },
+            group: [sequelize.literal(`TO_CHAR("createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'ART', 'HH24:00')`)],
+            order: [[sequelize.literal(`TO_CHAR("createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'ART', 'HH24:00')`), 'ASC']]
+        });
 
         res.status(200).json(reviewStats);
     } catch (error) {
