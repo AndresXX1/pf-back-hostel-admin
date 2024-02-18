@@ -10,7 +10,6 @@ module.exports = (sequelize) => {
         primaryKey: true,
         autoIncrement: true,
       },
-
       name: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -28,43 +27,40 @@ module.exports = (sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-
-      country : {
+      country: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
-
-      phone : {
+      phone: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
-
-      address : {
+      address: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
       },
-
       profilePicture: {
         type: DataTypes.STRING,
         allowNull: true,
       },
-
       rol: {
         type: DataTypes.ENUM("admin", "buyer"),
         allowNull: false,
-        defaultValue: "buyer", 
+        defaultValue: "buyer",
       },
-      
-      compras:{
+      compras: {
         type: DataTypes.ARRAY(DataTypes.JSON),
         allowNull: true,
       },
-
-      paymentMethods:{
+      paymentMethods: {
         type: DataTypes.ARRAY(DataTypes.JSON),
         allowNull: true,
-      }
-
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
+        defaultValue: DataTypes.NOW,
+      },
     },
     { timestamps: false, freezeTableName: true }
   );

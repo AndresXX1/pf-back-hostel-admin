@@ -44,6 +44,12 @@ module.exports = (sequelize) => {
         images: {
           type: DataTypes.ARRAY(DataTypes.STRING),
           allowNull: true,
+        },
+
+        createdAt: {
+          type: DataTypes.DATE,
+          defaultValue: DataTypes.NOW,
+          allowNull: false,
         }
       },
       { timestamps: false, freezeTableName: true }
