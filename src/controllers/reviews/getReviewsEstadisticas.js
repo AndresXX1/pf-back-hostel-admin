@@ -3,19 +3,21 @@ const { Op } = require("sequelize");
 
 const getReviewStatistics = async (req, res) => {
     try {
-        const reviewStats = await Review.findAll({
-            attributes: [
-                [sequelize.literal('HOUR("createdAt")'), 'hour'], // Extraer la hora de "createdAt"
-                [sequelize.fn('COUNT', sequelize.col('id')), 'reviewCount']
-            ],
-            group: [sequelize.literal('HOUR("createdAt")')],
-            where: {
-                createdAt: {
-                    [Op.gte]: sequelize.literal('CURDATE()') // Filtrar para obtener solo las revisiones de hoy
-                }
-            }
-        });
-        
+        const reviewStats = await sequelize.query(
+            `SELECT 
+                TO_CHAR(DATE_TRUNC('hour', "createdAt"), 'HH24:00') AS "hour",
+                COUNT(*) AS "reviewCount"
+            FROM 
+                "Review"
+            WHERE 
+                "createdAt" >= CURRENT_DATE - INTERVAL '1 day'
+            GROUP BY 
+                TO_CHAR(DATE_TRUNC('hour', "createdAt"), 'HH24:00')
+            ORDER BY 
+                "hour" ASC;`,
+            { type: sequelize.QueryTypes.SELECT }
+        );
+
         res.status(200).json(reviewStats);
     } catch (error) {
         console.error(error);
