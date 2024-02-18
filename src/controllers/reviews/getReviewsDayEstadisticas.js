@@ -6,14 +6,14 @@ const getReviewStatistics = async (req, res) => {
 
         const reviewStats = await sequelize.query(
             `SELECT 
-                TO_CHAR("createdAt" AT TIME ZONE 'America/Chicago', 'HH24:00') AS "hour",
+                TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Buenos_Aires', 'HH24:00') AS "hour",
                 COUNT(*) AS "reviewCount"
             FROM 
                 "Review"
             WHERE 
-                DATE("createdAt" AT TIME ZONE 'America/Chicago') = :currentDate
+                DATE("createdAt" AT TIME ZONE 'America/Argentina/Buenos_Aires') = :currentDate
             GROUP BY 
-                TO_CHAR("createdAt" AT TIME ZONE 'America/Chicago', 'HH24:00')
+                TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Buenos_Aires', 'HH24:00')
             ORDER BY 
                 "hour" ASC;`,
             { 
