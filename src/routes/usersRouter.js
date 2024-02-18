@@ -11,7 +11,7 @@ const { updateProfilePicture } = require("../controllers/users/upDatePictureCont
 const { updatePaymentMethods } = require ('../controllers/users/addPayMethod');
 const {deleteUser} = require ("../controllers/users/deleteUserController");
 const {Useradmin} = require ("../controllers/users/edditUserAdminController")
-
+const  getUserStatistics  = require ("../controllers/users/estadisticasPorDia")
 
 const usersRouter = Router();
 
@@ -26,5 +26,8 @@ usersRouter.put('/profile/picture/:idKey', updateProfilePicture);
 usersRouter.put('/:userId/paymentMethods', updatePaymentMethods);
 usersRouter.delete("/delete/:userId", deleteUser);
 usersRouter.put("/eddituseradmin/:userId", Useradmin);
+usersRouter.get("/estadisticapordia", getUserStatistics);
+
+
 
 module.exports = usersRouter;
