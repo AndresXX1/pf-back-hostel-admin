@@ -1,20 +1,20 @@
-const { User, Cart } = require("../../db");
+const { User } = require("../../db");
 const nodemailer = require("nodemailer");
 
 const postUser = async (name, surName, email, password, rol) => {
   try {
     const maxId = await User.max("id");
     const newId = maxId + 1;
+    const now = new Date().toLocaleString("en-US", { timeZone: "America/Argentina/Buenos_Aires" }); // Obtiene la fecha y hora actual en Argentina
     const user = await User.create({
       id: newId,
       name,
       surName,
       email,
       password,
-      rol
+      rol,
+      createdAt: now, // Asigna la fecha y hora actual al campo createdAt
     });
-
-    const cart = await Cart.create({ userId: user.id });
 
     await sendWelcomeEmail(name, surName, email);
 

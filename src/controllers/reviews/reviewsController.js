@@ -42,6 +42,7 @@ const getReviewsByProduct = async (req, res) => {
   }
 };
 
+
 const deleteReviews = async (req, res) => {
   try {
     // Extraer el ID de la revisión y el ID del producto de los parámetros de la URL
