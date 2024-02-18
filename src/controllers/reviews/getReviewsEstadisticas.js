@@ -1,10 +1,11 @@
-const { sequelize, Review, Op } = require("../../db");
+const { sequelize, Review } = require("../../db");
+const { Op } = require("sequelize");
 
 const getReviewStatistics = async (req, res) => {
     try {
         const reviewStats = await Review.findAll({
             attributes: [
-                [sequelize.literal('EXTRACT(hour FROM "createdAt")'), 'hour'],
+                [sequelize.literal('DATE_PART(\'hour\', "createdAt")'), 'hour'],
                 [sequelize.fn('COUNT', sequelize.col('id')), 'reviewCount']
             ],
             where: {
@@ -12,7 +13,7 @@ const getReviewStatistics = async (req, res) => {
                     [Op.gte]: sequelize.literal('CURRENT_DATE')
                 }
             },
-            group: [sequelize.literal('EXTRACT(hour FROM "createdAt")')]
+            group: [sequelize.literal('DATE_PART(\'hour\', "createdAt")')]
         });
         
         res.status(200).json(reviewStats);
