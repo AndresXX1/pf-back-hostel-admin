@@ -1,3 +1,8 @@
+const { sequelize, Review } = require("../../db");
+const { Op } = require("sequelize");
+
+
+
 const getReviewStatistics = async (req, res) => {
     try {
         const reviewStats = await sequelize.query(
