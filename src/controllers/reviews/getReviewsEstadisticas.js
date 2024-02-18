@@ -1,27 +1,33 @@
-const { Review, sequelize } = require("../../db");
+const { sequelize, Review } = require("../../db");
 const { Op } = require("sequelize");
-const moment = require("moment-timezone");
 
 const getReviewStatistics = async (req, res) => {
     try {
-        const today = moment.tz('America/Argentina/Buenos_Aires').startOf('day');
-        const yesterday = moment(today).subtract(1, 'day');
-
         const reviewStats = await Review.findAll({
             attributes: [
-                [sequelize.literal(`TO_CHAR("createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'ART', 'HH24:00')`), 'hour'],
+                [sequelize.literal('DATE_TRUNC(\'hour\', "createdAt")'), 'hour'], // Truncar la fecha a la hora más cercana
                 [sequelize.fn('COUNT', sequelize.col('id')), 'reviewCount']
             ],
             where: {
                 createdAt: {
-                    [Op.between]: [yesterday, today]
+                    [Op.gte]: sequelize.literal('CURRENT_DATE - INTERVAL \'1 day\'') // Obtener revisiones de las últimas 24 horas
                 }
             },
-            group: [sequelize.literal(`TO_CHAR("createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'ART', 'HH24:00')`)],
-            order: [[sequelize.literal(`TO_CHAR("createdAt" AT TIME ZONE 'UTC' AT TIME ZONE 'ART', 'HH24:00')`), 'ASC']]
+            group: [sequelize.literal('DATE_TRUNC(\'hour\', "createdAt")')] // Agrupar por hora truncada
         });
 
-        res.status(200).json(reviewStats);
+        // Crear un arreglo con todas las horas del día en formato '00:00'
+        const hoursOfDay = Array.from({ length: 24 }, (_, i) => `${i < 10 ? '0' : ''}${i}:00`);
+        // Mapear el resultado de la consulta para asegurarse de que todas las horas estén presentes
+        const formattedStats = hoursOfDay.map(hour => {
+            const matchingStat = reviewStats.find(stat => stat.hour === hour);
+            return {
+                hour: hour,
+                reviewCount: matchingStat ? matchingStat.reviewCount : 0 // Usar el recuento de revisiones si está disponible, de lo contrario, establecer en 0
+            };
+        });
+
+        res.status(200).json(formattedStats);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
