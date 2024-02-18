@@ -1,4 +1,4 @@
-const { sequelize, Review } = require("../../db");
+const { sequelize, Review, Op } = require("../../db");
 
 const getReviewStatistics = async (req, res) => {
     try {
@@ -9,7 +9,7 @@ const getReviewStatistics = async (req, res) => {
             ],
             where: {
                 createdAt: {
-                    [sequelize.Op.gte]: sequelize.literal('CURRENT_DATE')
+                    [Op.gte]: sequelize.literal('CURRENT_DATE')
                 }
             },
             group: [sequelize.literal('EXTRACT(hour FROM "createdAt")')]
