@@ -1,7 +1,7 @@
 const getAllReviews = require("../controllers/reviews/getAllReviews");
 const reviewsController = require("../controllers/reviews/reviewsController");
 const { Router } = require("express");
-const getReviewStatistics = require ("../controllers/reviews/getReviewsEstadisticas")
+const getReviewStatistics = require ("../controllers/reviews/getReviewsDayEstadisticas")
 
 
 const reviewsRouter = Router();
