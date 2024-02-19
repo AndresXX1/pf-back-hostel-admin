@@ -7,6 +7,7 @@ const getProductByNameHandler = require("../handlers/products/productByNameHandl
 const deleteProductsHandler = require("../handlers/products/deleteProductHandler")
 const getProductsByFilters = require ("../controllers/products/getFiletrController")
 const getProductStatistics = require ("../controllers/products/getProductDayStatistics")
+const {updateProduct} = require ("../controllers/products/edditProductAdmin");
 
 const productsRouter = Router();
 
@@ -17,6 +18,7 @@ productsRouter.get("/detail/:idKey", getProductByIdHandler);
 productsRouter.delete("/delete/:idKey", deleteProductsHandler);
 productsRouter.get("/filter", getProductsByFilters);
 productsRouter.get("/estadisticDay", getProductStatistics);
+productsRouter.put("/edditProduct/:productId", updateProduct)
 
 module.exports = productsRouter;
 
