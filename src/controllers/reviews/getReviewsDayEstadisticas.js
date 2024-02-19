@@ -2,24 +2,20 @@ const { sequelize } = require("../../db");
 
 const getReviewStatistics = async (req, res) => {
     try {
-        const currentDate = new Date().toISOString().split('T')[0]; // Obtiene la fecha actual en formato ISO (YYYY-MM-DD)
-
         const reviewStats = await sequelize.query(
             `SELECT 
+                TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'YYYY-MM-DD') AS "date",
                 TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'HH24:00') AS "hour",
                 COUNT(*) AS "reviewCount"
             FROM 
                 "Review"
-            WHERE 
-                DATE("createdAt" AT TIME ZONE 'Europe/Lisbon') = :currentDate
             GROUP BY 
+                TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'YYYY-MM-DD'),
                 TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'HH24:00')
             ORDER BY 
+                "date" ASC,
                 "hour" ASC;`,
-            { 
-                replacements: { currentDate },
-                type: sequelize.QueryTypes.SELECT 
-            }
+            { type: sequelize.QueryTypes.SELECT }
         );
 
         // Verifica si se obtuvieron estadísticas
@@ -27,7 +23,7 @@ const getReviewStatistics = async (req, res) => {
             res.status(200).json(reviewStats);
         } else {
             // Si no se encontraron estadísticas, devuelve un mensaje apropiado
-            res.status(404).json({ message: "No se encontraron estadísticas de revisiones para el día actual." });
+            res.status(404).json({ message: "No se encontraron estadísticas de revisiones." });
         }
     } catch (error) {
         // Captura cualquier error y envía una respuesta de error interno del servidor
