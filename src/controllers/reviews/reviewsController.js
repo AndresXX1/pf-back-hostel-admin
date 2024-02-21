@@ -1,4 +1,5 @@
 const { Review } = require("../../db");
+const moment = require('moment-timezone');
 
 const postReviews = async (req, res) => {
   try {
@@ -12,12 +13,16 @@ const postReviews = async (req, res) => {
       return res.status(400).json({ error: 'Todos los campos son obligatorios.' });
     }
 
+    // Obtener la fecha y hora actual en Argentina
+    const createdAt = moment()
+
     const review = await Review.create({
       content,
       rating,
       name,
       profileImage,
       productId: idKey,
+      createdAt // Agregar la fecha y hora de creación
     });
 
     res.status(201).json({ success: true, review });
@@ -26,7 +31,6 @@ const postReviews = async (req, res) => {
     res.status(500).json({ error: 'Error interno del servidor.' });
   }
 };
-
 const getReviewsByProduct = async (req, res) => {
   try {
     const { idKey } = req.params;
