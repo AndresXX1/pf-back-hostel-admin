@@ -8,7 +8,7 @@ const postProduct = async (name, location, season, pricePerNight, totalRooms, po
   console.log("ID del nuevo producto: ", newId);
 
   // Obtener la fecha y hora actual en Argentina
-  const createdAt = moment().tz('America/Argentina/Buenos_Aires').format('YYYY-MM-DD HH:mm:ss');
+  const createdAt = moment();
 
   const postInDb = await Product.create({ 
     id: newId, 

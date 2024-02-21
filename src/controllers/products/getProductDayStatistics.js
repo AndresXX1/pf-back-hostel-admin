@@ -4,14 +4,14 @@ const getProductStatistics = async (req, res) => {
     try {
         const productStats = await sequelize.query(
             `SELECT 
-                TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'YYYY-MM-DD') AS "date",
-                TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'HH24:00') AS "hour",
+                TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'YYYY-MM-DD') AS "date",
+                TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'HH24:00') AS "hour",
                 COUNT(*) AS "productCount"
             FROM 
                 "Product"
             GROUP BY 
-                TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'YYYY-MM-DD'),
-                TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'HH24:00')
+                TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'YYYY-MM-DD'),
+                TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'HH24:00')
             ORDER BY 
                 "date" ASC,
                 "hour" ASC;`,
