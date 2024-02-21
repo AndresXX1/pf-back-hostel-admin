@@ -5,13 +5,13 @@ const getReviewStatistics = async (req, res) => {
         // Consulta para obtener estadísticas del día actual
         const todayStats = await sequelize.query(
             `SELECT 
-                TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'YYYY-MM-DD') AS "date",
-                TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'HH24:00') AS "hour",
+                TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'YYYY-MM-DD') AS "date",
+                TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'HH24:00') AS "hour",
                 COUNT(*) AS "reviewCount"
             FROM 
                 "Review"
             WHERE 
-                DATE("createdAt" AT TIME ZONE 'Europe/Lisbon') = CURRENT_DATE
+                DATE("createdAt" AT TIME ZONE 'America/Argentina/Cordoba') = CURRENT_DATE
             GROUP BY 
                 "date", "hour"
             ORDER BY 
@@ -28,13 +28,13 @@ const getReviewStatistics = async (req, res) => {
         // Si no hay estadísticas para el día actual, buscar el último día anterior con datos
         const lastDayStats = await sequelize.query(
             `SELECT DISTINCT ON (TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'YYYY-MM-DD')) 
-                TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'YYYY-MM-DD') AS "date",
-                TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'HH24:00') AS "hour",
+                TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'YYYY-MM-DD') AS "date",
+                TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'HH24:00') AS "hour",
                 COUNT(*) AS "reviewCount"
             FROM 
                 "Review"
             WHERE 
-                DATE("createdAt" AT TIME ZONE 'Europe/Lisbon') < CURRENT_DATE
+                DATE("createdAt" AT TIME ZONE 'America/Argentina/Cordoba') < CURRENT_DATE
             GROUP BY 
                 "date", "hour"
             ORDER BY 
