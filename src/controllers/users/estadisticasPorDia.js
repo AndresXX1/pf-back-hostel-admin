@@ -2,33 +2,60 @@ const { sequelize } = require("../../db");
 
 const getUserStatistics = async (req, res) => {
     try {
-        const userStats = await sequelize.query(
+        // Consulta para obtener estadísticas del día actual
+        const todayStats = await sequelize.query(
             `SELECT 
-                TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'YYYY-MM-DD') AS "date",
-                TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'HH24:00') AS "hour",
+                TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'YYYY-MM-DD') AS "date",
+                TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'HH24:00') AS "hour",
                 COUNT(*) AS "userCount"
             FROM 
                 "User"
+            WHERE 
+                DATE("createdAt" AT TIME ZONE 'America/Argentina/Cordoba') = CURRENT_DATE
             GROUP BY 
-                TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'YYYY-MM-DD'),
-                TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'HH24:00')
+                "date", "hour"
             ORDER BY 
                 "date" ASC,
                 "hour" ASC;`,
             { type: sequelize.QueryTypes.SELECT }
         );
 
-        // Verifica si se obtuvieron estadísticas
-        if (userStats.length > 0) {
-            res.status(200).json(userStats);
-        } else {
-            // Si no se encontraron estadísticas, devuelve un mensaje apropiado
-            res.status(404).json({ message: "No se encontraron estadísticas de usuarios." });
+        // Si hay estadísticas disponibles para el día actual, devolverlas
+        if (todayStats.length > 0) {
+            return res.status(200).json(todayStats);
         }
+
+        // Si no hay estadísticas para el día actual, buscar el último día anterior con datos
+        const lastDayStats = await sequelize.query(
+            `SELECT DISTINCT ON (TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'YYYY-MM-DD')) 
+                TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'YYYY-MM-DD') AS "date",
+                TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'HH24:00') AS "hour",
+                COUNT(*) AS "userCount"
+            FROM 
+                "User"
+            WHERE 
+                DATE("createdAt" AT TIME ZONE 'America/Argentina/Cordoba') < CURRENT_DATE
+            GROUP BY 
+                "date", "hour"
+            ORDER BY 
+                "date" DESC,
+                "hour" DESC
+            LIMIT 3;`,
+            { type: sequelize.QueryTypes.SELECT }
+        );
+
+        // Si se encontraron estadísticas para el día anterior, devolver las últimas tres agrupaciones
+        if (lastDayStats.length > 0) {
+            return res.status(200).json(lastDayStats);
+        }
+
+        // Si no se encuentran fechas anteriores con estadísticas, devolver un mensaje indicando que no se encontraron estadísticas
+        return res.status(404).json({ message: "No se encontraron estadísticas de usuarios." });
+
     } catch (error) {
-        // Captura cualquier error y envía una respuesta de error interno del servidor
+        // Capturar cualquier error y enviar una respuesta de error interno del servidor
         console.error(error);
-        res.status(500).json({ error: "Error interno del servidor." });
+        return res.status(500).json({ error: "Error interno del servidor." });
     }
 };
 
