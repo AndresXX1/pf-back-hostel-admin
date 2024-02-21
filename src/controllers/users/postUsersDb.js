@@ -1,3 +1,4 @@
+const moment = require('moment-timezone');
 const { User } = require("../../db");
 const nodemailer = require("nodemailer");
 
@@ -5,7 +6,7 @@ const postUser = async (name, surName, email, password, rol) => {
   try {
     const maxId = await User.max("id");
     const newId = maxId + 1;
-    const now = new Date().toLocaleString("en-US", { timeZone: "America/Argentina/Buenos_Aires" }); // Obtiene la fecha y hora actual en Argentina
+    const now = moment().tz('America/Argentina/Buenos_Aires').format(); // Obtiene la fecha y hora actual en el huso horario especificado
     const user = await User.create({
       id: newId,
       name,
@@ -37,18 +38,17 @@ const sendWelcomeEmail = async (name, surName, email) => {
 
   try {
     const message = {
-      from: "runnersparadisecompany@gmail.com",
+      from: "hostelspremium@gmail.com",
       to: email,
-      subject: "¡Bienvenido a Runners Paradise!",
+      subject: "¡Bienvenido a Hostel Premium!",
       html: `
-        <div style="font-family: 'Arial', sans-serif; padding: 20px; background-color: #f4f4f4;">
-          <img src="https://res.cloudinary.com/dugaeurmo/image/upload/v1705794624/icbwkvhxg0k5oep5vhr8.jpg" alt="Logo de Runners Paradise" style="width: 150px; height: auto; margin: 0 auto; display: block;">
-          <h2 style="text-align: center; color: #333; margin-top: 20px;">¡Bienvenido a Runners Paradise, ${name} ${surName}!</h2>
-          <p style="text-align: center; color: #555; font-size: 16px;">Gracias por unirte a nuestra comunidad. Estamos emocionados de tenerte como parte de Runners Paradise, donde encontrarás todo lo que necesitas para tus aventuras y carreras.</p>
-          <p style="text-align: center; color: #555; font-size: 16px;">Explora nuestras últimas colecciones, realiza compras seguras y mantente al tanto de las últimas tendencias en el mundo del running.</p>
-          <p style="text-align: center; color: #555; font-size: 16px;">Si tienes alguna pregunta o necesitas asistencia, nuestro equipo de soporte está aquí para ayudarte. ¡Esperamos que disfrutes de tu experiencia en Runners Paradise!</p>
-          <p style="text-align: center; color: #555; font-size: 16px;">¡Bienvenido y a correr se ha dicho!</p>
-          <p style="text-align: center; color: #888; font-size: 14px;">Atentamente,<br>El equipo de Runners Paradise</p>
+        <div style="font-family: 'Arial', sans-serif; padding: 20px; background-color: #f8f8f8;">
+          <h2 style="text-align: center; color: #282c36; margin-top: 20px;">¡Bienvenido a Hostel Premium, ${name} ${surName}!</h2>
+          <p style="text-align: center; color: #333; font-size: 16px;">Gracias por unirte a nuestra comunidad. Estamos emocionados de tenerte como parte de Hostel Premium, donde encontrarás los mejores alojamientos y experiencias para tus viajes.</p>
+          <p style="text-align: center; color: #333; font-size: 16px;">Explora nuestra amplia selección de hostales, hoteles y casas de huéspedes en destinos increíbles de todo el mundo. ¡Encuentra el lugar perfecto para tu próximo viaje!</p>
+          <p style="text-align: center; color: #333; font-size: 16px;">Si necesitas ayuda para encontrar el alojamiento ideal o tienes alguna pregunta sobre nuestros servicios, nuestro equipo de soporte está aquí para ayudarte. ¡Esperamos que disfrutes de tu experiencia en Hostel Premium!</p>
+          <p style="text-align: center; color: #333; font-size: 16px;">¡Bienvenido y que tengas un viaje increíble!</p>
+          <p style="text-align: center; color: #555; font-size: 14px;">Atentamente,<br>El equipo de Hostel Premium</p>
         </div>
       `,
     };
