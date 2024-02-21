@@ -1,3 +1,5 @@
+const { sequelize } = require("../../db");
+
 const getProductStatistics = async (req, res) => {
     try {
         const currentDate = new Date(); // Obtener la fecha actual
