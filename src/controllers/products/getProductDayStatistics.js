@@ -1,76 +1,63 @@
-const { sequelize } = require("../../db");
-const { Op } = require("sequelize");
-
-const getUserStatistics = async (req, res) => {
+const getProductStatistics = async (req, res) => {
     try {
-        // Obtener la fecha actual y la fecha del día anterior
-        const today = new Date();
-        const yesterday = new Date(today);
-        yesterday.setDate(today.getDate() - 1);
+        const currentDate = new Date(); // Obtener la fecha actual
+        const currentDateString = currentDate.toISOString().split('T')[0]; // Obtener la fecha actual en formato YYYY-MM-DD
 
-        // Formatear las fechas para que coincidan con el formato de la base de datos
-        const todayFormatted = today.toISOString().split('T')[0];
-        const yesterdayFormatted = yesterday.toISOString().split('T')[0];
-
-        // Modificar la consulta SQL para seleccionar las estadísticas según los criterios especificados
-        const userStats = await sequelize.query(
+        // Consulta SQL para obtener las estadísticas del día actual
+        const productStats = await sequelize.query(
             `SELECT 
-                TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'YYYY-MM-DD') AS "date",
-                TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'HH24:00') AS "hour",
-                COUNT(*) AS "userCount"
+                TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'YYYY-MM-DD') AS "date",
+                TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'HH24:00') AS "hour",
+                COUNT(*) AS "productCount"
             FROM 
-                "User"
+                "Product"
             WHERE
-                TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'YYYY-MM-DD') = :today
+                TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'YYYY-MM-DD') = '${currentDateString}'
             GROUP BY 
-                TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'YYYY-MM-DD'),
-                TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'HH24:00')
+                TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'YYYY-MM-DD'),
+                TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'HH24:00')
             ORDER BY 
                 "date" ASC,
-                "hour" ASC
-            LIMIT 24;`,
-            {
-                replacements: { today: todayFormatted },
-                type: sequelize.QueryTypes.SELECT
-            }
+                "hour" ASC;`,
+            { type: sequelize.QueryTypes.SELECT }
         );
 
         // Verificar si se obtuvieron estadísticas para el día actual
-        if (userStats.length === 0) {
-            // Si no se obtuvieron estadísticas para el día actual, obtener las últimas 3 agrupaciones del día anterior
-            const userStatsYesterday = await sequelize.query(
+        if (productStats.length > 0) {
+            res.status(200).json(productStats);
+        } else {
+            // Si no hay estadísticas para el día actual, buscar las últimas 3 agrupaciones del día anterior
+            const previousDate = new Date(currentDate);
+            previousDate.setDate(previousDate.getDate() - 1); // Obtener la fecha del día anterior
+            const previousDateString = previousDate.toISOString().split('T')[0]; // Obtener la fecha del día anterior en formato YYYY-MM-DD
+
+            // Consulta SQL para obtener las últimas 3 agrupaciones del día anterior
+            const productStatsPrevious = await sequelize.query(
                 `SELECT 
-                    TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'YYYY-MM-DD') AS "date",
-                    TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'HH24:00') AS "hour",
-                    COUNT(*) AS "userCount"
+                    TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'YYYY-MM-DD') AS "date",
+                    TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'HH24:00') AS "hour",
+                    COUNT(*) AS "productCount"
                 FROM 
-                    "User"
+                    "Product"
                 WHERE
-                    TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'YYYY-MM-DD') = :yesterday
+                    TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'YYYY-MM-DD') = '${previousDateString}'
                 GROUP BY 
-                    TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'YYYY-MM-DD'),
-                    TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'HH24:00')
+                    TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'YYYY-MM-DD'),
+                    TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'HH24:00')
                 ORDER BY 
                     "date" ASC,
                     "hour" ASC
-                LIMIT 72;`,
-                {
-                    replacements: { yesterday: yesterdayFormatted },
-                    type: sequelize.QueryTypes.SELECT
-                }
+                LIMIT 3;`, // Limitar a las últimas 3 agrupaciones del día anterior
+                { type: sequelize.QueryTypes.SELECT }
             );
 
             // Verificar si se obtuvieron estadísticas para el día anterior
-            if (userStatsYesterday.length === 0) {
-                // Si no se obtuvieron estadísticas para el día anterior, devolver un mensaje de error
-                res.status(404).json({ message: "No se encontraron estadísticas de usuarios para el día actual ni para el día anterior." });
+            if (productStatsPrevious.length > 0) {
+                res.status(200).json(productStatsPrevious);
             } else {
-                // Si se obtuvieron estadísticas para el día anterior, devolverlas
-                res.status(200).json(userStatsYesterday);
+                // Si no hay estadísticas para el día anterior, devolver un mensaje indicando que no se encontraron estadísticas
+                res.status(404).json({ message: "No se encontraron estadísticas de productos." });
             }
-        } else {
-            // Si se obtuvieron estadísticas para el día actual, devolverlas
-            res.status(200).json(userStats);
         }
     } catch (error) {
         // Capturar cualquier error y enviar una respuesta de error interno del servidor
@@ -79,4 +66,4 @@ const getUserStatistics = async (req, res) => {
     }
 };
 
-module.exports = getUserStatistics;
+module.exports = getProductStatistics;
