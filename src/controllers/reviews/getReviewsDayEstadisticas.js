@@ -27,7 +27,7 @@ const getReviewStatistics = async (req, res) => {
 
         // Si no hay estadísticas para el día actual, buscar el último día anterior con datos
         const lastDayStats = await sequelize.query(
-            `SELECT DISTINCT ON (TO_CHAR("createdAt" AT TIME ZONE 'Europe/Lisbon', 'YYYY-MM-DD')) 
+            `SELECT DISTINCT ON (TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'YYYY-MM-DD')) 
                 TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'YYYY-MM-DD') AS "date",
                 TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Cordoba', 'HH24:00') AS "hour",
                 COUNT(*) AS "reviewCount"
