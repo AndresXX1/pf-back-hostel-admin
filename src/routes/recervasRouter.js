@@ -6,6 +6,7 @@ const {allReservasHandler} = require ("../controllers/recerba/getAllReservas");
 const {deleteReserva} = require ("../controllers/recerba/deleteReserva");
 const {getTotalAmount} = require ("../controllers/recerba/totalAmount");
 const {calcularGananciasHostelPremium} = require ("../controllers/recerba/GananciasTotalAmount");
+const getReservationStatistics = require ("../controllers/recerba/estadisticaporhora");
 
 
 const RecerbaRouter = Router();
@@ -17,6 +18,6 @@ RecerbaRouter.get("/todas",allReservasHandler);
 RecerbaRouter.delete("/delete/:reservaId", deleteReserva);
 RecerbaRouter.get("/totalamount",getTotalAmount);
 RecerbaRouter.get("/ganancias", calcularGananciasHostelPremium);
-
+RecerbaRouter.get("/estadistica", getReservationStatistics);
 
 module.exports = RecerbaRouter;
