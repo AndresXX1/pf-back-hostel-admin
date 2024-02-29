@@ -1,16 +1,16 @@
-const { Reservas } = require("../../db");
+const { Reservas, User, Product } = require("../../db");
 
 const allReservasHandler = async (req, res) => {
  try {
     const response = await Reservas.findAll({
       include: [
         {
-          model: User, // Asegúrate de importar el modelo User
-          attributes: ['name'], // Ajusta los atributos según sea necesario
+          model: User,
+          attributes: ['name'],
         },
         {
-          model: Product, // Asegúrate de importar el modelo Product
-          attributes: ['name'], // Ajusta los atributos según sea necesario
+          model: Product,
+          attributes: ['name'],
         },
       ],
       attributes: ['id', 'productId', 'userId', 'startDate', 'endDate', 'totalRooms', 'totalGuests', 'createdAt', 'totalAmount']
@@ -26,8 +26,8 @@ const allReservasHandler = async (req, res) => {
       totalGuests: reserva.totalGuests,
       createdAt: reserva.createdAt,
       totalAmount: reserva.totalAmount,
-      userName: reserva.User.name, // Accede al nombre del usuario a través de la asociación
-      productName: reserva.Product.name, // Accede al nombre del producto a través de la asociación
+      userName: reserva.User.name,
+      productName: reserva.Product.name,
     }));
 
     return res.status(200).json(mappedReservas);
