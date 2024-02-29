@@ -1,4 +1,4 @@
-const { Reservas } = require("../db");
+const { Reservas } = require("../../db");
 
 const calcularGananciasHostelPremium = async (req, res) => {
   try {
