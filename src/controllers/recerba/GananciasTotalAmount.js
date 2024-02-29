@@ -1,33 +1,33 @@
-const getReviewStatisticsMes = async (req, res) => {
-    try {
-        // Obtener el primer y último día del mes actual
-        const today = new Date();
-        const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+const { Reservas } = require("../../db");
 
-        // Consulta para obtener las estadísticas de reviews para el mes actual
-        let monthStats = await getReviewStatisticsForMonth(firstDayOfMonth, lastDayOfMonth);
+const calcularGananciasHostelPremium = async (req, res) => {
+  try {
+    // Obtener todas las reservas
+    const reservas = await Reservas.findAll();
 
-        // Si no hay estadísticas disponibles para el mes actual, buscar las del mes anterior
-        if (monthStats.length === 0) {
-            const firstDayOfPreviousMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-            const lastDayOfPreviousMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-            monthStats = await getReviewStatisticsForMonth(firstDayOfPreviousMonth, lastDayOfPreviousMonth);
-        }
-
-        // Si hay estadísticas disponibles, agruparlas por semana
-        if (monthStats.length > 0) {
-            const groupedStats = groupStatisticsByWeek(monthStats);
-            const response = formatResponse(groupedStats, today.getMonth() + 1); // Mes actual
-            return res.status(200).json(response);
-        }
-
-        // Si no se encuentran estadísticas para el mes actual ni para el mes anterior, devolver un mensaje indicando que no se encontraron estadísticas
-        return res.status(404).json({ message: "No se encontraron estadísticas de reviews para este mes ni para el mes anterior." });
-
-    } catch (error) {
-        // Capturar cualquier error y enviar una respuesta de error interno del servidor
-        console.error(error);
-        return res.status(500).json({ error: "Error interno del servidor." });
+    // Calcular la cantidad total sumando el totalAmount de cada reserva
+    let totalAmount = 0;
+    for (const reserva of reservas) {
+      totalAmount += reserva.totalAmount;
     }
+
+    // Calcular el 10% de la cantidad total como ganancias del Hostel Premium
+    const gananciasHostelPremium = totalAmount * 0.1;
+
+    // Formatear las ganancias con espacios
+    const gananciasFormateadas = gananciasHostelPremium.toLocaleString("es-ES", {
+      style: "currency",
+      currency: "ARS",
+    });
+
+    // Devolver las ganancias del Hostel Premium formateadas en la respuesta
+    return res.status(200).json({ gananciasHostelPremium: gananciasFormateadas });
+  } catch (error) {
+    console.error("Error calculating Hostel Premium earnings:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+module.exports = {
+  calcularGananciasHostelPremium,
 };
