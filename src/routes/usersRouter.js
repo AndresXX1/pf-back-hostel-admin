@@ -12,6 +12,10 @@ const { updatePaymentMethods } = require ('../controllers/users/addPayMethod');
 const {deleteUser} = require ("../controllers/users/deleteUserController");
 const {Useradmin} = require ("../controllers/users/edditUserAdminController")
 const  getUserStatistics  = require ("../controllers/users/estadisticasPorDia")
+const getUserStatisticsSemana = require ("../controllers/users/estadisticasPorSemana");
+const getUserStatisticsMes = require ("../controllers/users/estadisticasPorMes");
+const getUserStatisticsYear = require ("../controllers/users/estadisticasAnual");
+const {banUser, unbanUser} = require ("../controllers/users/bannerUser");
 
 const usersRouter = Router();
 
@@ -27,6 +31,11 @@ usersRouter.put('/:userId/paymentMethods', updatePaymentMethods);
 usersRouter.delete("/delete/:userId", deleteUser);
 usersRouter.put("/eddituseradmin/:userId", Useradmin);
 usersRouter.get("/estadisticapordia", getUserStatistics);
+usersRouter.get("/estadisticaporsemana",getUserStatisticsSemana);
+usersRouter.get ("/estadisticaporMes", getUserStatisticsMes);
+usersRouter.get ("/estadisticaporAnual", getUserStatisticsYear);
+usersRouter.put ("/banner/:userId", banUser);
+usersRouter.put ("/unbanner/:userId", unbanUser);
 
 
 

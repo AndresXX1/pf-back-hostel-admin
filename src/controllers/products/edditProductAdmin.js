@@ -11,7 +11,19 @@ const updateProduct = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    // Actualizar los datos del producto
+   
+    if ('season' in updatedProductData) {
+      
+      if (!Array.isArray(updatedProductData.season)) {
+        
+        updatedProductData.season = updatedProductData.season
+          .replace(/[{}]/g, '') 
+          .split(',')
+          .map(season => season.trim());
+      }
+    }
+
+   
     await product.update(updatedProductData);
 
     return res.status(200).json({ message: "Product updated successfully", product });

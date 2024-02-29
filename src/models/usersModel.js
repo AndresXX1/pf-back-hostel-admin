@@ -56,6 +56,15 @@ module.exports = (sequelize) => {
         type: DataTypes.ARRAY(DataTypes.JSON),
         allowNull: true,
       },
+      banned: { 
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
+      bannedAt: { 
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,

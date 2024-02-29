@@ -3,7 +3,7 @@ const { User } = require("../../db");
 const allUsers = async () => {
   try {
     const response = await User.findAll({
-      attributes: ['id', 'name', 'surName', 'email', 'rol', "password", "country", "phone","address"] 
+      attributes: ['id', 'name', 'surName', 'email', 'rol', "password", "country", "phone","address","banned"] 
     });
 
     const mappedUsers = response.map((user) => ({
@@ -16,6 +16,7 @@ const allUsers = async () => {
       country: user.country,
       phone: user.phone,
       address: user.address,
+      banned: user.banned
 
 
     }));
