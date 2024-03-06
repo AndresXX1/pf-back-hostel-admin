@@ -5,7 +5,7 @@
 * 📁 Soporta la subida y bajada de datos
 * 🪟 Realizada con Node.js, Sequelize, expres
 
-<!-- <img width="1459" alt="スクリーンショット 2023-11-20 2 23 51" src="https://github.com/ryo-ma/gpt-assistants-api-ui/assets/6661165/5c288d51-196a-4919-bc4d-dc508146f58a"> -->
+ <img width="1459" alt="スクリーンショット 2023-11-20 2 23 51" src="https://github.com/AndresXX1/pf-back-hostel-admin/blob/main/public/0_S0rWo-lYM3IWsjbH.png"> 
 
 ## 🌟 Quick Start
 
